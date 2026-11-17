@@ -1,4 +1,5 @@
 import pandas as pd
+from reportlab.pdfgen import canvas
 
 
 def lerplanilha(nomearquivo):
@@ -63,6 +64,10 @@ def gerarhtml(classificacao):
         arquivo.write('<h1 align="center">CAMPEONATO BRASILEIRO SÉRIE A - 2026</h1>\n')
         arquivo.write('<p align="center">Classificação gerada pelo programa Python a partir da planilha da CBF</p>\n')
 
+        arquivo.write('<p align="center">\n')
+        arquivo.write('<a href="classificacao.pdf" target="_blank">VER TABELA EM PDF</a>\n')
+        arquivo.write('</p>\n')
+
         arquivo.write('<table align="center" border="1" cellpadding="6">\n')
         arquivo.write('<tr>\n')
         arquivo.write('<th>POS</th><th>TIME</th><th>PTS</th><th>J</th>')
@@ -103,6 +108,75 @@ def gerarhtml(classificacao):
         print(f'Erro ao gerar o arquivo html: {erro}')
 
 
+def gerarpdf(classificacao):
+    try:
+        pdf = canvas.Canvas('classificacao.pdf')
+
+        pdf.setTitle('Campeonato Brasileiro Serie A 2026')
+
+        pdf.setFillColor('black')
+        pdf.setFont("Helvetica-Bold", 17)
+        pdf.drawString(120, 795, 'CAMPEONATO BRASILEIRO SÉRIE A - 2026')
+
+        pdf.setFont("Helvetica-Oblique", 10)
+        pdf.drawString(170, 778, 'Classificação gerada pelo programa Python a partir da planilha da CBF')
+
+        pdf.setFont("Helvetica-Bold", 12)
+        pdf.drawString(55, 745, 'POS')
+        pdf.drawString(110, 745, 'TIME')
+        pdf.drawString(330, 745, 'PTS')
+        pdf.drawString(390, 745, 'J')
+        pdf.drawString(440, 745, 'V')
+        pdf.drawString(480, 745, 'E')
+        pdf.drawString(520, 745, 'D')
+
+        pdf.setFont("Helvetica", 12)
+        pdf.drawString(55, 737, '_' * 85)
+
+        espaco = int(640 / len(classificacao))
+        if espaco > 24:
+            espaco = 24
+
+        x = 745 - espaco - 10
+
+        for linha in range(0, len(classificacao)):
+            time = classificacao[linha]
+
+            pdf.setFillColor('black')
+            if linha < 4:
+                pdf.setFillColor('green')
+            if linha >= len(classificacao) - 4:
+                pdf.setFillColor('red')
+
+            pdf.setFont("Helvetica-Bold", 11)
+            pdf.drawString(55, x, f'{time[0]}º')
+            pdf.drawString(110, x, f'{time[1]}')
+            pdf.drawString(330, x, f'{time[6]}')
+
+            pdf.setFont("Helvetica", 11)
+            pdf.drawString(390, x, f'{time[2]}')
+            pdf.drawString(440, x, f'{time[3]}')
+            pdf.drawString(480, x, f'{time[4]}')
+            pdf.drawString(520, x, f'{time[5]}')
+
+            x -= espaco
+
+        pdf.setFillColor('black')
+        pdf.setFont("Helvetica", 12)
+        pdf.drawString(55, x + 10, '_' * 85)
+
+        pdf.setFont("Helvetica-Oblique", 9)
+        pdf.drawString(55, x - 10, 'J = jogos | V = vitórias | E = empates | D = derrotas | PTS = pontos')
+        pdf.drawString(55, x - 24, 'Vitória = 3 pontos | Empate = 1 ponto | Derrota = 0 ponto')
+        pdf.drawString(55, x - 38, 'Em verde os 4 melhores times e em vermelho os 4 piores times')
+
+        pdf.save()
+        print('Arquivo classificacao.pdf gerado com sucesso!')
+
+    except Exception as erro:
+        print(f'Erro ao gerar o arquivo pdf: {erro}')
+
+
 print('=' * 70)
 print('{:^70}'.format('CAMPEONATO BRASILEIRO SERIE A - 2026'))
 print('{:^70}'.format('Leitura da planilha da CBF e geracao da classificacao'))
@@ -130,6 +204,8 @@ else:
 
     print('=' * 70)
     gerarhtml(classificacao)
+    gerarpdf(classificacao)
     print('=' * 70)
     print('Abra o arquivo classificacao.html para ver a pagina web.')
+    print('Na pagina existe um botao que abre o classificacao.pdf.')
     print('=' * 70)

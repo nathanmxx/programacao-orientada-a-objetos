@@ -35,6 +35,21 @@ PrettyTable.
 O arquivo `banco.sql` cria o banco `escola`, as tabelas `turmas` e `alunos` com
 a chave estrangeira entre elas, e já insere as 18 turmas dos seis cursos.
 
+### brasileirao/
+
+Lê uma planilha do Excel com a campanha de cada time do Campeonato Brasileiro
+(jogos, vitórias, empates e derrotas), calcula os pontos e monta a
+classificação. Times com a mesma pontuação ficam na mesma posição.
+
+A leitura procura as linhas de time pela coluna de jogos, então títulos,
+cabeçalhos e observações da planilha são ignorados, e ela funciona com
+planilhas de estrutura diferente. A classificação sai no terminal, numa página
+HTML e num PDF, com os quatro primeiros em verde e os quatro últimos em
+vermelho. A página tem um link que abre o PDF.
+
+Na pasta `planilhas/` estão a tabela do Brasileirão 2026 e uma planilha de
+teste com outra estrutura.
+
 ## Como executar
 
 Os dois primeiros programas rodam direto, só com Python 3:
@@ -50,12 +65,21 @@ O sistema escolar precisa de MySQL e de duas bibliotecas:
     mysql -u root -p < banco.sql
     python sistema-escolar.py
 
-A conexão lê as variáveis de ambiente `DB_HOST`, `DB_NAME`, `DB_USER` e
+O Brasileirão precisa de pandas, openpyxl e ReportLab. O programa pergunta o
+nome da planilha e grava `classificacao.html` e `classificacao.pdf` na pasta
+de onde foi rodado:
+
+    cd brasileirao
+    pip install -r requirements.txt
+    python brasileirao.py
+
+A conexão do sistema escolar lê as variáveis de ambiente `DB_HOST`, `DB_NAME`, `DB_USER` e
 `DB_PASSWORD`, e cai em `localhost`, `escola`, `root` e senha vazia quando elas
 não estão definidas.
 
 ## Tecnologias
 
-Python 3 e MySQL, com mysql-connector-python e PrettyTable no sistema escolar.
+Python 3 e MySQL, com mysql-connector-python e PrettyTable no sistema escolar,
+e pandas e ReportLab no Brasileirão.
 
 Projeto desenvolvido em equipe.
